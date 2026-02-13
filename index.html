@@ -15,42 +15,21 @@
       text-align: center;
       background: linear-gradient(135deg, #9b59b6, #8e44ad, #6c3483);
       overflow: hidden;
-      position: relative;
     }
 
     button {
       padding: 10px 20px;
+      margin: 10px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      position: absolute;
-      transform: translate(-50%, 0);
-    }
-
-    #yesBtn {
-      background: green;
-      color: white;
-    }
-
-    #noBtn {
-      background: red;
-      color: purple;
+      transition: all 0.3s ease;
     }
 
     img {
       max-width: 300px;
       border-radius: 15px;
       transition: transform 0.3s ease;
-      display: block;
-      margin: 0 auto;
-    }
-
-    /* Yes button pulse animation */
-    @keyframes pulse {
-      0% { transform: translate(-50%, 0) scale(1); }
-      50% { transform: translate(-50%, 0) scale(1.2); }
-      100% { transform: translate(-50%, 0) scale(1); }
     }
   </style>
 </head>
@@ -71,39 +50,21 @@
       "🔪🔪🔪🔪🔪🔪",
       "Dame!!Doshite sonna koto suru no!🥺",
     ];
-
-    const firstImg = "https://media.giphy.com/media/ya4eevXU490Iw/giphy.gif"; // puppy eyes
-    const noClick1 = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXc3aWh3dnJkbWxjNGhwMWh3Y3ZodzhuZmQ2YmJiYzBwMWgzYXR2ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HHzBaXsra2MHciRNQr/giphy.gif"; // 1st No
-    const noClick2 = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjBqam94eWk3c3hvdTV2eTF5YnozdG0wdGRlY2RuNmNsdHV2eHU3ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YRPBhd3vscg5Fxx1DQ/giphy.gif"; // 2nd No
+    
+    const firstImg = "https://media.giphy.com/media/3oEduSbSRVgzHZ3bLW/giphy.gif"; // hearts
     const secondImg = "https://media.giphy.com/media/l0Exk8EUzSLsrErEQ/giphy.gif"; // celebration
 
     let noClicks = 0;
     let isValentine = false;
     const app = document.getElementById("app");
 
-    let mouseX = window.innerWidth / 2;
-
-    document.addEventListener('mousemove', e => {
-      mouseX = e.clientX;
-      const yesBtn = document.getElementById('yesBtn');
-      if (yesBtn) {
-        // move slightly towards mouse X
-        const currentX = yesBtn.offsetLeft;
-        const newX = currentX + (mouseX - currentX) * 0.1;
-        yesBtn.style.left = newX + "px";
-      }
-    });
-
     function render() {
       app.innerHTML = "";
 
-      const img = document.createElement("img");
-
       if (!isValentine) {
-        // GIF based on noClicks
-        if (noClicks === 1) img.src = noClick1;
-        else if (noClicks === 2) img.src = noClick2;
-        else img.src = firstImg;
+        const img = document.createElement("img");
+
+        img.src = noClicks === 0 ? firstImg : secondImg;
 
         app.appendChild(img);
 
@@ -111,52 +72,41 @@
         h1.textContent = "Will you be my vali vali🥹💘";
         app.appendChild(h1);
 
-        // Yes button
+        const btnContainer = document.createElement("div");
+
         const yesBtn = document.createElement("button");
-        yesBtn.id = "yesBtn";
         yesBtn.textContent = "Yes";
         yesBtn.style.fontSize = `${Math.min(16 + noClicks * 20, 120)}px`;
-        yesBtn.style.bottom = "20px";
-        yesBtn.style.left = "50%";
-        yesBtn.style.animation = "pulse 1s infinite";
+        yesBtn.style.background = "green";
+        yesBtn.style.color = "white";
         yesBtn.onclick = () => {
           isValentine = true;
           confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
           render();
         };
-        app.appendChild(yesBtn);
+        btnContainer.appendChild(yesBtn);
 
         const noBtn = document.createElement("button");
-        noBtn.id = "noBtn";
-        noBtn.textContent = noClicks >= 3 ? NO_PHRASES[Math.min(noClicks - 3, NO_PHRASES.length - 1)] : "No";
-
+        noBtn.textContent = noClicks === 0 ? "No" : NO_PHRASES[Math.min(noClicks - 1, NO_PHRASES.length - 1)];
         noBtn.style.background = "red";
         noBtn.style.color = "purple";
-
-        function teleportNo() {
-          const maxX = window.innerWidth - noBtn.offsetWidth;
-          const maxY = window.innerHeight - noBtn.offsetHeight;
-          const x = Math.random() * maxX;
-          const y = Math.random() * maxY;
-          noBtn.style.left = `${x}px`;
-          noBtn.style.top = `${y}px`;
-        }
+        noBtn.style.position = "relative";
 
         noBtn.onclick = () => {
           noClicks++;
-          if (noClicks >= 3) teleportNo();
+          if (noClicks > 0) {
+            const x = Math.random() * 300 - 150;
+            const y = Math.random() * 300 - 150;
+            noBtn.style.transform = `translate(${x}px, ${y}px) rotate(${Math.random()*20-10}deg)`;
+          }
           render();
         };
 
-        if (noClicks >= 3) teleportNo();
-        else {
-          noBtn.style.left = "calc(50% + 60px)";
-          noBtn.style.top = "50%";
-        }
-
-        app.appendChild(noBtn);
+        btnContainer.appendChild(noBtn);
+        app.appendChild(btnContainer);
 
       } else {
+        const img = document.createElement("img");
         img.src = secondImg;
         app.appendChild(img);
 
