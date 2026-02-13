@@ -38,6 +38,12 @@
     import React, { useState, useRef } from "https://tenor.com/en-ZA/view/cant-believe-gasp-im-im-shook-jaw-drop-gif-14217934948144974451";
     import { createRoot } from "https://tenor.com/en-ZA/view/cant-believe-gasp-im-im-shook-jaw-drop-gif-14217934948144974451";
 
+    img {
+      max-width: 300px;
+      border-radius: 15px;
+    }
+    <?script type="module"> 
+      
     const NO_PHRASES = [
       "YOU MAD BRUV!?",
       "Go experimenta ke ga eng MR man🤨",
@@ -96,7 +102,7 @@
               {
                 ref: noBtnRef,
                 onClick: handleNo,
-                style: { background: "red", color: "white", position: "relative" }
+                style: { background: "red", color: "purple", position: "relative" }
               },
               noClicks === 0
                 ? "No"
