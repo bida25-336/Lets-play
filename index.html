@@ -1,11 +1,11 @@
 /** @jsxImportSource https://esm.sh/react@18.2.0 */
+import React, { useState, useRef } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
-import React, { useState } from "https://esm.sh/react@18.2.0";
 
 const NO_PHRASES = [
   "YOU MAD BRUV!?",
   "Go experimenta ke ga eng MR man🤨",
-  "I see you wanna die yung nigga",
+  "I see you wanna die yung n***a",
   "😭😭😭",
   "Don't break my heart :(",
   "BRUV!!!",
@@ -15,17 +15,32 @@ const NO_PHRASES = [
 function App() {
   const [noClicks, setNoClicks] = useState(0);
   const [isValentine, setIsValentine] = useState(false);
-  const yesButtonSize = (noClicks * 20) + 16;
+  const noBtnRef = useRef(null);
 
-  const firstImg = "https://media.tenor.com/VIChDQ6ejRQAAAAj/jumping-bear-hearts-no-png.gif";
-  const secondImg = "https://media.tenor.com/f1xnRxTRxLAAAAAj/bears-with-kisses-bg.gif";
+  const yesButtonSize = Math.min(16 + noClicks * 20, 120);
+
+  const firstImg =
+    "https://media.tenor.com/VIChDQ6ejRQAAAAj/jumping-bear-hearts-no-png.gif";
+  const secondImg =
+    "https://media.tenor.com/f1xnRxTRxLAAAAAj/bears-with-kisses-bg.gif";
 
   const handleNo = () => {
-    setNoClicks(prev => prev + 1);
+    setNoClicks((prev) => prev + 1);
+
+    // Button starts dodging after 2 clicks 😭
+    if (noClicks >= 1 && noBtnRef.current) {
+      const x = Math.random() * 300 - 150;
+      const y = Math.random() * 300 - 150;
+      noBtnRef.current.style.transform = `translate(${x}px, ${y}px)`;
+    }
   };
 
   const handleYes = () => {
     setIsValentine(true);
+    const audio = new Audio(
+      "https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3",
+    );
+    audio.play().catch(() => {});
   };
 
   return (
@@ -38,61 +53,88 @@ function App() {
         height: "100vh",
         fontFamily: "Arial, sans-serif",
         textAlign: "center",
+        overflow: "hidden",
       }}
     >
-      {!isValentine
-        ? (
-          <>
-            <img src={firstImg} />
-            <h1>Will you be my Valentine? 💘</h1>
-            <div>
-              <button
-                onClick={handleYes}
-                style={{
-                  fontSize: `${yesButtonSize}px`,
-                  margin: "10px",
-                  padding: "10px 20px",
-                  backgroundColor: "green",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Yes
-              </button>
-              <button
-                onClick={handleNo}
-                style={{
-                  fontSize: "16px",
-                  margin: "10px",
-                  padding: "10px 20px",
-                  backgroundColor: "red",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                {noClicks === 0 ? "No" : NO_PHRASES[Math.min(noClicks - 1, NO_PHRASES.length - 1)]}
-              </button>
-            </div>
-          </>
-        )
-        : (
-          <>
-            <img src={secondImg} />
-            <div
+      {!isValentine ? (
+        <>
+          <img
+            src={firstImg}
+            alt="Cute bear asking to be your Valentine"
+            loading="lazy"
+          />
+          <h1>Will you be my Valentine? 💘</h1>
+
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={handleYes}
               style={{
-                fontSize: "48px",
-                color: "pink",
-                fontWeight: "bold",
+                fontSize: `${yesButtonSize}px`,
+                margin: "10px",
+                padding: "10px 20px",
+                backgroundColor: "green",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
               }}
+              aria-label="Say yes"
             >
-              Yay!!! 💖🎉
-            </div>
-          </>
-        )}
+              Yes
+            </button>
+
+            <button
+              ref={noBtnRef}
+              onClick={handleNo}
+              style={{
+                fontSize: "16px",
+                margin: "10px",
+                padding: "10px 20px",
+                backgroundColor: "red",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                position: "relative",
+                transition: "transform 0.2s ease",
+              }}
+              aria-label="Say no"
+            >
+              {noClicks === 0
+                ? "No"
+                : NO_PHRASES[Math.min(noClicks - 1, NO_PHRASES.length - 1)]}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <img
+            src={secondImg}
+            alt="Bears celebrating love"
+            loading="lazy"
+          />
+          <div
+            style={{
+              fontSize: "48px",
+              color: "hotpink",
+              fontWeight: "bold",
+              animation: "pop 0.6s ease",
+            }}
+          >
+            Yay!!! 💖🎉
+          </div>
+        </>
+      )}
+
+      <style>
+        {`
+          @keyframes pop {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+        `}
+      </style>
     </div>
   );
 }
@@ -100,18 +142,17 @@ function App() {
 function client() {
   createRoot(document.getElementById("root")).render(<App />);
 }
-if (typeof document !== "undefined") { client(); }
 
-export default async function server(request: Request): Promise<Response> {
+if (typeof document !== "undefined") client();
+
+export default async function server() {
   return new Response(
     `
     <html>
       <head>
         <title>Valentine's Day Invitation</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-          body { margin: 0; font-family: Arial, sans-serif; }
-        </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>body { margin: 0; }</style>
       </head>
       <body>
         <div id="root"></div>
@@ -119,9 +160,7 @@ export default async function server(request: Request): Promise<Response> {
         <script type="module" src="${import.meta.url}"></script>
       </body>
     </html>
-  `,
-    {
-      headers: { "content-type": "text/html" },
-    },
+    `,
+    { headers: { "content-type": "text/html" } },
   );
 }
