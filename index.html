@@ -13,6 +13,8 @@
       align-items: center;
       font-family: Arial, sans-serif;
       text-align: center;
+      background: #ffe6f2;
+      overflow: hidden;
     }
 
     button {
@@ -27,17 +29,14 @@
     img {
       max-width: 300px;
       border-radius: 15px;
+      transition: transform 0.3s ease;
     }
   </style>
 </head>
-
 <body>
-  <div id="root"></div>
-  
-  <script type="module">
-    import React, { useState, useRef } from "https://esm.sh/react@18";
-    import { createRoot } from "https://esm.sh/react-dom@18/client";
-      
+  <div id="app"></div>
+
+  <script>
     const NO_PHRASES = [
       "YOU MAD BRUV!?",
       "Go experimenta ke ga eng MR man🤨",
@@ -49,76 +48,23 @@
       "Dame!!Doshite sonna koto suru no!🥺",
     ];
 
-    function App() {
-      const [noClicks, setNoClicks] = useState(0);
-      const [isValentine, setIsValentine] = useState(false);
-      const noBtnRef = useRef(null);
+    const firstImg = "https://media.tenor.com/VIChDQ6ejRQAAAAj/jumping-bear-hearts-no-png.gif";
+    const jawDropImg = "https://media.tenor.com/en-ZA/view/benjammins-jaw-drop-jaw-dropping-jaw-dropped-2-glasses-gif-2909162914451875972.gif";
+    const secondImg = "https://media.tenor.com/f1xnRxTRxLAAAAAj/bears-with-kisses-bg.gif";
 
-      const yesSize = Math.min(16 + noClicks * 20, 120);
+    let noClicks = 0;
+    let isValentine = false;
 
-      const firstImg = "https://media.tenor.com/VIChDQ6ejRQAAAAj/jumping-bear-hearts-no-png.gif";
-      const shookImg = "https://media.tenor.com"; 
-      const secondImg = "https://media.tenor.com/f1xnRxTRxLAAAAAj/bears-with-kisses-bg.gif";
+    const app = document.getElementById("app");
 
-      // logic: If exactly 1 click, show shookImg. Otherwise show firstImg.
-      const currentDisplayImg = noClicks === 1 ? shookImg : firstImg;
-
-      function handleNo() {
-        setNoClicks(c => c + 1);
-
-        if (noClicks >= 1 && noBtnRef.current) {
-          const x = Math.random() * 300 - 150;
-          const y = Math.random() * 300 - 150;
-          noBtnRef.current.style.transform = `translate(${x}px, ${y}px)`;
-        }
-      }
+    function render() {
+      app.innerHTML = ""; // clear previous content
 
       if (!isValentine) {
-        return React.createElement(
-          "div",
-          null,
-          // Updated to use the conditional currentDisplayImg
-          React.createElement("img", { src: currentDisplayImg }),
-          React.createElement("h1", null, "Will you be my vali vali🥹💘"),
-          React.createElement(
-            "div",
-            null,
-            React.createElement(
-              "button",
-              {
-                onClick: () => setIsValentine(true),
-                style: { fontSize: yesSize + "px", background: "green", color: "white" }
-              },
-              "Yes"
-            ),
-            React.createElement(
-              "button",
-              {
-                ref: noBtnRef,
-                onClick: handleNo,
-                style: { background: "red", color: "purple", position: "relative" }
-              },
-              noClicks === 0
-                ? "No"
-                : NO_PHRASES[Math.min(noClicks - 1, NO_PHRASES.length - 1)]
-            )
-          )
-        );
-      }
+        const img = document.createElement("img");
 
-      return React.createElement(
-        "div",
-        null,
-        React.createElement("img", { src: secondImg }),
-        React.createElement("h1", { style: { color: "hotpink" } }, "YAY 💖🎉.My prince in shining crowns 🥹💖 Tsa o lata mothowaame")
-      );
-    }
+        // First click of NO shows jaw-drop GIF with scale animation
+        if (noClicks === 1) {
+          img.src = jawDropImg;
 
-    createRoot(document.getElementById("root")).render(
-      React.createElement(App)
-    );
-  </script>
-</body>
-</html>
-
-
+      
